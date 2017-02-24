@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlManger", "XmlManger\XmlManger.csproj", "{42AA4242-B235-437A-AD2D-8B645AF31972}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Public.Common", "..\Public.Common\Public.Common.csproj", "{777EBFBB-B2D0-4EDF-B7A4-6500C9293DF1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{42AA4242-B235-437A-AD2D-8B645AF31972}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42AA4242-B235-437A-AD2D-8B645AF31972}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42AA4242-B235-437A-AD2D-8B645AF31972}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42AA4242-B235-437A-AD2D-8B645AF31972}.Release|Any CPU.Build.0 = Release|Any CPU
+		{777EBFBB-B2D0-4EDF-B7A4-6500C9293DF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{777EBFBB-B2D0-4EDF-B7A4-6500C9293DF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{777EBFBB-B2D0-4EDF-B7A4-6500C9293DF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{777EBFBB-B2D0-4EDF-B7A4-6500C9293DF1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
