@@ -13,11 +13,10 @@ namespace TEC.Public.Common
     public class XmlOperating
     {
         /// <summary>
-        /// 生成XML文件
+        /// 创建XML文件
         /// </summary>
-        public void CreateXml() {
+        public void CreateXml(string path,string rootnode) {
             XmlDocument xmldoc;
-            XmlNode xmlnode;
             XmlElement xmlelem;
 
             xmldoc = new XmlDocument();
@@ -26,33 +25,16 @@ namespace TEC.Public.Common
             xmldecl = xmldoc.CreateXmlDeclaration("1.0", "gb2312", null);
             xmldoc.AppendChild(xmldecl);
             //加入一个根元素
-            xmlelem = xmldoc.CreateElement("", "Employees", "");
+            xmlelem = xmldoc.CreateElement("", rootnode, "");
             xmldoc.AppendChild(xmlelem);
-            //加入另外一个元素
-            for (int i = 1; i < 3; i++)
-            {
-                XmlNode root = xmldoc.SelectSingleNode("Employees");//查找<Employees> 
-                XmlElement xe1 = xmldoc.CreateElement("Node");//创建一个<Node>节点 
-                xe1.SetAttribute("genre", "李赞红");//设置该节点genre属性 
-                xe1.SetAttribute("ISBN", "2-3631-4");//设置该节点ISBN属性
-                XmlElement xesub1 = xmldoc.CreateElement("title");
-                xesub1.InnerText = "CS从入门到精通";//设置文本节点 
-                xe1.AppendChild(xesub1);//添加到<Node>节点中 
-                XmlElement xesub2 = xmldoc.CreateElement("author");
-                xesub2.InnerText = "候捷";
-                xe1.AppendChild(xesub2);
-                XmlElement xesub3 = xmldoc.CreateElement("price");
-                xesub3.InnerText = "58.3";
-                xe1.AppendChild(xesub3);
-                root.AppendChild(xe1);//添加到<Employees>节点中 
-            }
+        
             //保存创建好的XML文档
-            //xmldoc.Save(Server.MapPath("data.xml"));
+            xmldoc.Save(path);//Server.MapPath("data.xml")
         }
         /// <summary>
-        /// 
+        /// 流创建文件
         /// </summary>
-        public void CreateXml2() {
+        public void CreateXmlByWriter() {
             XmlTextWriter xmlWriter;
             string strFilename = "";//Server.MapPath("data1.xml");
             xmlWriter = new XmlTextWriter(strFilename, Encoding.Default);//创建一个xml文档
@@ -75,123 +57,99 @@ namespace TEC.Public.Common
             xmlWriter.Close();     
         }
         /// <summary>
-        /// 
+        /// 添加一个二级节点
         /// </summary>
-        public void AddNode() {
+        public void AddNode(string path, string rootnode, string nodename,string nodetext, string[][] attribute)
+        {
             XmlDocument xmlDoc = new XmlDocument();
-            //xmlDoc.Load(Server.MapPath("data.xml"));
-            XmlNode root = xmlDoc.SelectSingleNode("Employees");//查找<Employees> 
-            XmlElement xe1 = xmlDoc.CreateElement("Node");//创建一个<Node>节点 
-            xe1.SetAttribute("genre", "张三");//设置该节点genre属性 
-            xe1.SetAttribute("ISBN", "1-1111-1");//设置该节点ISBN属性
-            XmlElement xesub1 = xmlDoc.CreateElement("title");
-            xesub1.InnerText = "C#入门帮助";//设置文本节点 
-            xe1.AppendChild(xesub1);//添加到<Node>节点中 
-            XmlElement xesub2 = xmlDoc.CreateElement("author");
-            xesub2.InnerText = "高手";
-            xe1.AppendChild(xesub2);
-            XmlElement xesub3 = xmlDoc.CreateElement("price");
-            xesub3.InnerText = "158.3";
-            xe1.AppendChild(xesub3);
-            root.AppendChild(xe1);//添加到<Employees>节点中 
-            //xmlDoc.Save(Server.MapPath("data.xml"));
-
+            xmlDoc.Load(path);
+            XmlNode root = xmlDoc.SelectSingleNode(rootnode);//查找根节点
+            XmlElement xe = xmlDoc.CreateElement(nodename);//创建一个新节点 
+            xe.InnerText = nodetext;
+            if (attribute.Length>1)
+                for (int i = 0; i < attribute.Length; i = i + 2)
+                    xe.SetAttribute(attribute[i][0], attribute[i][2]);//设置该节点属性 
+            root.AppendChild(xe);//添加到<Employees>节点中 
+            xmlDoc.Save(path);
+        }
+        /// <summary>
+        /// 修改二级节点text
+        /// </summary>
+        public void UpdNodeText(string path, string rootnode, string nodename, string nodetext) {
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(path);
+            XmlNodeList nodeList = xmlDoc.SelectSingleNode(rootnode).ChildNodes;//获取根节点的所有子节点
+            foreach (XmlNode xn in nodeList)//遍历所有子节点 
+            {
+                XmlElement xe = (XmlElement)xn;//将子节点类型转换为XmlElement类型 
+                if (xe.Name == nodename)
+                {
+                    xe.InnerText = nodetext;
+                }
+            }
+            xmlDoc.Save(path);//保存。
         }
         /// <summary>
         /// 修改结点的值（属性和子结点）
         /// </summary>
-        public void UpdNode() {
+        public void UpdNodeAttribute(string path, string rootnode, string attrname, string attrnewvalue,string attroldvalue)
+        {
             XmlDocument xmlDoc = new XmlDocument();
-            //xmlDoc.Load(Server.MapPath("data.xml"));
-            XmlNodeList nodeList = xmlDoc.SelectSingleNode("Employees").ChildNodes;//获取Employees节点的所有子节点
+            xmlDoc.Load(path);
+            XmlNodeList nodeList = xmlDoc.SelectSingleNode(rootnode).ChildNodes;//获取根节点的所有子节点
             foreach (XmlNode xn in nodeList)//遍历所有子节点 
             {
                 XmlElement xe = (XmlElement)xn;//将子节点类型转换为XmlElement类型 
-                if (xe.GetAttribute("genre") == "张三")//如果genre属性值为“张三” 
+                if (xe.GetAttribute(attrname) == attroldvalue)//如果属性值
                 {
-                    xe.SetAttribute("genre", "update张三");//则修改该属性为“update张三”
-                    XmlNodeList nls = xe.ChildNodes;//继续获取xe子节点的所有子节点 
-                    foreach (XmlNode xn1 in nls)//遍历 
-                    {
-                        XmlElement xe2 = (XmlElement)xn1;//转换类型 
-                        if (xe2.Name == "author")//如果找到 
-                        {
-                            xe2.InnerText = "亚胜";//则修改
-                        }
-                    }
+                    xe.SetAttribute(attrname, attrnewvalue);//则修改该属性                    
                 }
             }
-            // xmlDoc.Save(Server.MapPath("data.xml"));//保存。
+            xmlDoc.Save(path);//保存。
         }
-        /// <summary>
-        /// 修改结点（添加结点的属性和添加结点的自结点）
-        /// </summary>
-        public void UpdNode2() {
-            XmlDocument xmlDoc = new XmlDocument();
-            //xmlDoc.Load(Server.MapPath("data.xml"));
-            XmlNodeList nodeList = xmlDoc.SelectSingleNode("Employees").ChildNodes;//获取Employees节点的所有子节点
-            foreach (XmlNode xn in nodeList)
-            {
-                XmlElement xe = (XmlElement)xn;
-                xe.SetAttribute("test", "111111");
-                XmlElement xesub = xmlDoc.CreateElement("flag");
-                xesub.InnerText = "1";
-                xe.AppendChild(xesub);
-            }
-            //xmlDoc.Save(Server.MapPath("data.xml"));            
-        }
+
         /// <summary>
         /// 删除结点中的某一个属性
         /// </summary>
-        public void DelNodeAttr() {
+        public void DelNodeAttr(string path,string rootnode,string nodeattr) {
             XmlDocument xmlDoc = new XmlDocument();
-            //xmlDoc.Load(Server.MapPath("data.xml"));
-            XmlNodeList xnl = xmlDoc.SelectSingleNode("Employees").ChildNodes;
+            xmlDoc.Load(path);
+            XmlNodeList xnl = xmlDoc.SelectSingleNode(rootnode).ChildNodes;
             foreach (XmlNode xn in xnl)
             {
                 XmlElement xe = (XmlElement)xn;
-                xe.RemoveAttribute("genre");//删除genre属性
-                XmlNodeList nls = xe.ChildNodes;//继续获取xe子节点的所有子节点 
-                foreach (XmlNode xn1 in nls)//遍历 
-                {
-                    XmlElement xe2 = (XmlElement)xn1;//转换类型 
-                    if (xe2.Name == "flag")//如果找到 
-                    {
-                        xe.RemoveChild(xe2);//则删除
-                    }
-                }
+                xe.RemoveAttribute(nodeattr);//删除属性               
             }
-            //xmlDoc.Save(Server.MapPath("data.xml"));
+            xmlDoc.Save(path);
         }
         /// <summary>
         /// 删除结点
         /// </summary>
-        public void DelNode() {
+        public void DelNode(string path,string rootnode,string nodename) {
             XmlDocument xmlDoc = new XmlDocument();
-            //xmlDoc.Load(Server.MapPath("data.xml"));
-            XmlNode root = xmlDoc.SelectSingleNode("Employees");
-            XmlNodeList xnl = xmlDoc.SelectSingleNode("Employees").ChildNodes;
-            for (int i = 0; i < xnl.Count; i++)
+            xmlDoc.Load(path);
+            XmlNode root = xmlDoc.SelectSingleNode(rootnode);
+            XmlNodeList xnl = xmlDoc.SelectSingleNode(rootnode).ChildNodes;
+            foreach (XmlNode xn in xnl)
             {
-                XmlElement xe = (XmlElement)xnl.Item(i);
-                if (xe.GetAttribute("genre") == "张三")
-                {
-                    root.RemoveChild(xe);
-                    if (i < xnl.Count) i = i - 1;
-                }
+                XmlElement xe = (XmlElement)xn;
+                if (xe.Name == nodename)
+                    root.RemoveChild(xe);             
             }
-            //xmlDoc.Save(Server.MapPath("data.xml"));
+            xmlDoc.Save(path);
         }
         /// <summary>
         /// 按照文本文件读取xml
         /// </summary>
-        public void ReadXml() {
-            System.IO.StreamReader myFile = new
-            System.IO.StreamReader(Server.MapPath("data.xml"), System.Text.Encoding.Default);
+        public void ReadXml(string path) {
+            System.IO.StreamReader myFile = new System.IO.StreamReader(path, Encoding.Default);
             //注意System.Text.Encoding.Default
             string myString = myFile.ReadToEnd();//myString是读出的字符串
             myFile.Close();
         }
+        /// <summary>
+        /// XML基础操作
+        /// </summary>
         public void temp() {
             ///初始化一个xml实例
             //XmlDocument xml = new XmlDocument();
@@ -223,6 +181,42 @@ namespace TEC.Public.Common
             ////保存XML文件
             //string path = Server.MapPath("~/file/bookstore.xml");
             //xml.Save(path);
+
+
+            //修改三级，可以扩展递归
+            //XmlNodeList nls = xe.ChildNodes;//继续获取xe子节点的所有子节点 
+            //foreach (XmlNode xn1 in nls)//遍历 
+            //{
+            //    XmlElement xe2 = (XmlElement)xn1;//转换类型 
+            //    if (xe2.Name == "author")//如果找到 
+            //    {
+            //        xe2.InnerText = "亚胜";//则修改
+            //    }
+            //}
+
+            //CreateXml加入另外一个元素
+            //for (int i = 1; i < 3; i++)
+            //{
+            //    XmlNode root = xmldoc.SelectSingleNode("Employees");//查找<Employees>
+
+            //    XmlElement xe1 = xmldoc.CreateElement("Node");//创建一个<Node>节点 
+            //    xe1.SetAttribute("genre", "李赞红");//设置该节点genre属性 
+            //    xe1.SetAttribute("ISBN", "2-3631-4");//设置该节点ISBN属性
+
+            //    XmlElement xesub1 = xmldoc.CreateElement("title");
+            //    xesub1.InnerText = "CS从入门到精通";//设置文本节点 
+            //    xe1.AppendChild(xesub1);//添加到<Node>节点中 
+
+            //    XmlElement xesub2 = xmldoc.CreateElement("author");
+            //    xesub2.InnerText = "候捷";
+            //    xe1.AppendChild(xesub2);
+
+            //    XmlElement xesub3 = xmldoc.CreateElement("price");
+            //    xesub3.InnerText = "58.3";
+            //    xe1.AppendChild(xesub3);
+
+            //    root.AppendChild(xe1);//添加到<Employees>节点中 
+            //}
         }
     }
 }
